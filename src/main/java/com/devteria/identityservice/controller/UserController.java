@@ -25,38 +25,55 @@ public class UserController {
 
 
     //post: tạo
-    @PostMapping //api
-    ApiResponse<User> createUser(@RequestBody @Valid UserCreationRequest request){
+
+    @PostMapping
+    //api
+    ApiResponse<User> createUser(@RequestBody @Valid UserCreationRequest request) {
         ApiResponse<User> apiResponse = new ApiResponse<>();
         apiResponse.setResult(userService.createUser(request));
         return apiResponse;
     }
 
     //get: lấy
-    @GetMapping //api
-    List<UserResponse> getUsers(){
-        return userService.getUsers();
+
+    @GetMapping
+    ApiResponse<List<UserResponse>> getUsers() {
+        ApiResponse<List<UserResponse>> apiResponse = new ApiResponse<>();
+        apiResponse.setResult(userService.getUsers());
+        return apiResponse;
+
     }
 
     //@PathVariable: truyền tham số
     @GetMapping("/{userId}")
-    UserResponse getUser(@PathVariable String userId){
-        return userService.getUser(userId);
+
+    ApiResponse<UserResponse> getUser(@PathVariable String userId) {
+        ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
+        apiResponse.setResult(userService.getUser(userId));
+        return apiResponse;
+
     }
 
     //put: update thong tin
     @PutMapping("/{userId}")
-    UserResponse updateUser(@PathVariable String userId ,@RequestBody UserUpdateRequest request){
-        return userService.updateUser(userId, request);
+
+    ApiResponse<UserResponse> updateUser(@PathVariable String userId, @RequestBody UserUpdateRequest request) {
+        ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
+        apiResponse.setResult(userService.updateUser(userId, request));
+        return apiResponse;
+
     }
 
     //delete: xoa
     @DeleteMapping("/{userId}")
-    String deleteUser(@PathVariable String userId){
+
+    ApiResponse<String> deleteUser(@PathVariable String userId) {
+        ApiResponse<String> apiResponse = new ApiResponse<>();
         userService.deleteUser(userId);
-        return "User has been deleted";
+        apiResponse.setMessage("User has been deleted");
+        return apiResponse;
     }
 
 
- }
+}
 
