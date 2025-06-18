@@ -13,3 +13,6 @@ spring:
     hibernate:
       ddl-auto: update
     snow-sql: true
+
+jwt:
+  signerKey: "hEoxvhp+9WoCrvHn+6mStpc6FhPbQakBylCVWvz0LzechI/vY3GsZosYDmXmABLh"
