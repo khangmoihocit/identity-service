@@ -26,7 +26,7 @@ public class UserService {
     UserMapper userMapper;
 
 
-    public User createUser(UserCreationRequest request){
+    public UserResponse createUser(UserCreationRequest request){
 
         //phuong thuc existsByUsername : giup kiem tra xem ten da ton tai chua
         if (userRepository.existsByUsername(request.getUsername())) throw new AppException(ErrorCode.USER_EXISTED);
@@ -34,10 +34,11 @@ public class UserService {
         User user = userMapper.toUser(request);
 
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10); //10 la do phuc tap ma hoa
+        //số phức tapj cao sẽ ảnh hưởng đến tốc độ, 10 là mặc định
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
         //hàm trong interface UserR epository kế thừa Jpa
-        return userRepository.save(user);
+        return userMapper.toUserResponse(userRepository.save(user));
     }
 
 
