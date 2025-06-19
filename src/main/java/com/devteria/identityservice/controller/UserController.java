@@ -17,7 +17,7 @@ import java.util.List;
 
 //controller sẽ tương tác trực tiếp với các class service
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/users")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserController {

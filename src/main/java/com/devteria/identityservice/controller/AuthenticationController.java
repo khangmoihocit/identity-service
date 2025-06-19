@@ -33,6 +33,8 @@ public class AuthenticationController {
                 .build();
     }
 
+
+    //xác thực token
     @PostMapping("/introspect")
     ApiResponse<IntrospectResponse> authenticate1(@RequestBody IntrospectRequest request)
             throws ParseException, JOSEException {

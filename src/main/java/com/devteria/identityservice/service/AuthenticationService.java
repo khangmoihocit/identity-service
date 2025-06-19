@@ -59,7 +59,7 @@ public class AuthenticationService {
     }
 
 
-
+    //đăng nhập thành công sẽ trả về token
     public AuthenticationResponse authentication(AuthenticationRequest request){
         User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
