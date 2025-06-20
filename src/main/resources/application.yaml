@@ -1,5 +1,8 @@
 server:
+<<<<<<< HEAD
 
+=======
+>>>>>>> dev
   port: 8082
   servlet:
     context-path: /identity

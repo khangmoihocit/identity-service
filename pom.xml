@@ -78,6 +78,16 @@
 		</dependency>
 
 
+<<<<<<< HEAD
+=======
+<!--		khi thêm vào sẽ tự config bật springsecurity, sẽ không thể chạy url-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+		</dependency>
+
+
+>>>>>>> dev
 	</dependencies>
 
 	<build>

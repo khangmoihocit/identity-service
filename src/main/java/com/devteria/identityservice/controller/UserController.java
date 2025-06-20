@@ -17,7 +17,8 @@ import java.util.List;
 
 //controller sẽ tương tác trực tiếp với các class service
 @RestController
-@RequestMapping("/user")
+
+@RequestMapping("/users")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserController {
@@ -25,7 +26,6 @@ public class UserController {
 
 
     //post: tạo
-
     @PostMapping
     //api
     ApiResponse<UserResponse> createUser(@RequestBody @Valid UserCreationRequest request) {
@@ -35,7 +35,6 @@ public class UserController {
     }
 
     //get: lấy
-
     @GetMapping
     ApiResponse<List<UserResponse>> getUsers() {
         ApiResponse<List<UserResponse>> apiResponse = new ApiResponse<>();
@@ -46,27 +45,22 @@ public class UserController {
 
     //@PathVariable: truyền tham số
     @GetMapping("/{userId}")
-
     ApiResponse<UserResponse> getUser(@PathVariable String userId) {
         ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
         apiResponse.setResult(userService.getUser(userId));
         return apiResponse;
-
     }
 
     //put: update thong tin
     @PutMapping("/{userId}")
-
     ApiResponse<UserResponse> updateUser(@PathVariable String userId, @RequestBody UserUpdateRequest request) {
         ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
         apiResponse.setResult(userService.updateUser(userId, request));
         return apiResponse;
-
     }
 
     //delete: xoa
     @DeleteMapping("/{userId}")
-
     ApiResponse<String> deleteUser(@PathVariable String userId) {
         ApiResponse<String> apiResponse = new ApiResponse<>();
         userService.deleteUser(userId);
