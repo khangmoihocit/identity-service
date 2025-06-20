@@ -55,10 +55,11 @@ public class SecurityConfig {
         return httpSecurity.build();
     }
 
+    //custom tu SCOPE_ sang ROLE_
     @Bean
     JwtAuthenticationConverter jwtAuthenticationConverter(){
         JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("ROLE_"); //custom tu SCOPE_ sang ROLE_
+        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
 
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
@@ -66,6 +67,7 @@ public class SecurityConfig {
         return jwtAuthenticationConverter;
     }
 
+    //config: cần token mới dùng được các request chưa public
     @Bean
     JwtDecoder jwtDecoder() {
         SecretKeySpec secretKeySpec = new SecretKeySpec(signerKey.getBytes(), "HS512");
