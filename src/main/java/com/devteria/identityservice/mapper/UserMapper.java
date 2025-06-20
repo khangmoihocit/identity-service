@@ -15,7 +15,6 @@ public interface UserMapper {
     User toUser(UserCreationRequest request);
 
     @Mapping(source = "firstName", target = "lastName")
-    @Mapping(source = "password", target = "password")
     UserResponse toUserResponse(User user);
     List<UserResponse> toUsersResponse(List<User> Users);
     void updateUser(@MappingTarget User user, UserUpdateRequest request);
