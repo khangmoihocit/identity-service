@@ -1,5 +1,6 @@
 package com.devteria.identityservice.configuration;
 
+import com.devteria.identityservice.enums.Role;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,9 +9,14 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
 import javax.crypto.spec.SecretKeySpec;
@@ -19,23 +25,29 @@ import javax.crypto.spec.SecretKeySpec;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final String[] PUBLIC_ENDPOINTS= {"/users", "/auth/log-in", "/auth/log-in"};
+    private final String[] PUBLIC_ENDPOINTS = {"/users", "/auth/log-in", "/auth/log-in"};
 
     @Value("${jwt.signerKey}")
     private String signerKey;
 
-    //cấu hình public các quyeenf
+    //cấu hình  các quyeenf
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 
+        //permitAll: public
         httpSecurity.authorizeHttpRequests(request ->
-                request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll() //public - cho phep truy cap k can secutir
+                request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
+                        //chỉ token có roles là admin mới truy cập được
+                        .requestMatchers(HttpMethod.GET, "/users")
+//                        .hasAuthority("ROLE_ADMIN")
+                        .hasRole(Role.ADMIN.name())// tuong duong voi cai tren, k co ROLE_
                         .anyRequest().authenticated() //còn các request khác phải login
         );
 
-        //config cần token mới dùng được
+        //config: cần token mới dùng được các request chưa public
         httpSecurity.oauth2ResourceServer(outh2 ->
-                outh2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder()))
+                outh2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())
+                        .jwtAuthenticationConverter(jwtAuthenticationConverter()))
         );
 
         httpSecurity.csrf(AbstractHttpConfigurer::disable); //tắt csrf
@@ -44,12 +56,28 @@ public class SecurityConfig {
     }
 
     @Bean
-    JwtDecoder jwtDecoder (){
+    JwtAuthenticationConverter jwtAuthenticationConverter(){
+        JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("ROLE_"); //custom tu SCOPE_ sang ROLE_
+
+        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
+
+        return jwtAuthenticationConverter;
+    }
+
+    @Bean
+    JwtDecoder jwtDecoder() {
         SecretKeySpec secretKeySpec = new SecretKeySpec(signerKey.getBytes(), "HS512");
         return NimbusJwtDecoder
                 .withSecretKey(secretKeySpec)
                 .macAlgorithm(MacAlgorithm.HS512)
                 .build();
+    }
+
+    @Bean
+    PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder(10);
     }
 
 }

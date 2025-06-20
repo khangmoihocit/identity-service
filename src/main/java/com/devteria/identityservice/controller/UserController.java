@@ -10,17 +10,20 @@ import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-//controller sẽ tương tác trực tiếp với các class service
 @RestController
-
 @RequestMapping("/users")
 @RequiredArgsConstructor
+//@RequiredArgsConstructor chỉ tạo constructor với các trường có final thôi bạn nhé,
+// nó khác với @AllArgsConstructor ( sẽ tạo constructor với tất cả các trường)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Slf4j //de dùng log.
 public class UserController {
     UserService userService;
 
@@ -37,9 +40,15 @@ public class UserController {
     //get: lấy
     @GetMapping
     ApiResponse<List<UserResponse>> getUsers() {
-        ApiResponse<List<UserResponse>> apiResponse = new ApiResponse<>();
-        apiResponse.setResult(userService.getUsers());
-        return apiResponse;
+        //chứa thông tin user đang login hiện tại
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        log.info("Username: {}", authentication.getName());
+        authentication.getAuthorities().forEach(item -> log.info(item.getAuthority()));
+
+
+        return ApiResponse.<List<UserResponse>>builder()
+                .result(userService.getUsers())
+                .build();
 
     }
 
