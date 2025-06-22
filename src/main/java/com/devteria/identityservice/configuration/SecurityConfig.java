@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -23,6 +24,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 @Configuration //se tự động chạy method đc đánh giấu bean
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
     private final String[] PUBLIC_ENDPOINTS = {"/users", "/auth/log-in", "/auth/log-in"};
@@ -38,9 +40,9 @@ public class SecurityConfig {
         httpSecurity.authorizeHttpRequests(request ->
                 request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
                         //chỉ token có roles là admin mới truy cập được
-                        .requestMatchers(HttpMethod.GET, "/users")
-//                        .hasAuthority("ROLE_ADMIN")
-                        .hasRole(Role.ADMIN.name())// tuong duong voi cai tren, k co ROLE_
+//                        .requestMatchers(HttpMethod.GET, "/users").hasRole(Role.ADMIN.name())
+//                        .hasAuthority("SCOPE_ADMIN")
+                        // tuong duong voi cai tren, k co ROLE_
                         .anyRequest().authenticated() //còn các request khác phải login
         );
 
@@ -55,10 +57,11 @@ public class SecurityConfig {
         return httpSecurity.build();
     }
 
+    //custom tu SCOPE_ sang ROLE_
     @Bean
     JwtAuthenticationConverter jwtAuthenticationConverter(){
         JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("ROLE_"); //custom tu SCOPE_ sang ROLE_
+        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
 
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
@@ -66,6 +69,7 @@ public class SecurityConfig {
         return jwtAuthenticationConverter;
     }
 
+    //config: cần token mới dùng được các request chưa public
     @Bean
     JwtDecoder jwtDecoder() {
         SecretKeySpec secretKeySpec = new SecretKeySpec(signerKey.getBytes(), "HS512");

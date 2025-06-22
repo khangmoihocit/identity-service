@@ -12,24 +12,30 @@ import com.devteria.identityservice.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor //cac thuoc tinh final se tu tao constructor nen khong can annotation @Autowired
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true) //makeFinal khoi tao cac thuoc tinh la final
+@Slf4j
 public class UserService {
     UserRepository userRepository;
     UserMapper userMapper;
     PasswordEncoder passwordEncoder;
 
 
-    public UserResponse createUser(UserCreationRequest request){
+    public UserResponse createUser(UserCreationRequest request) {
 
         //phuong thuc existsByUsername : giup kiem tra xem ten da ton tai chua
         if (userRepository.existsByUsername(request.getUsername())) throw new AppException(ErrorCode.USER_EXISTED);
@@ -48,20 +54,32 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
-
-    //tra ve userResponse thay vi user
-    public List<UserResponse> getUsers(){
-        //hàm trong interface UserRepository kế thừa Jpa
+    //#PreAuthorize: kiểm tra trước khi vào method, đúng quyền mới chạy code trong method
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<UserResponse> getUsers() {
+        log.info("In method get users");
         return userMapper.toUsersResponse(userRepository.findAll());
     }
 
-    public UserResponse getUser(String userId){
+    //@PostAuthorize: kiểm tra sau khi method thực hiện xong, nếu đúng điều kiện sẽ trả về, không thì chặn
+    //user đang đăng nhập chỉ lấy đc thông tin của mình
+    @PostAuthorize("returnObject.username == authentication.name")
+    public UserResponse getUser(String userId) {
         return userMapper.toUserResponse(userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found")));
     }
 
+    public UserResponse getMyInfo() {
+        var context = SecurityContextHolder.getContext();
+        String name = context.getAuthentication().getName();
+        User user = userRepository.findByUsername(name)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        return userMapper.toUserResponse(user);
+    }
+
     //update user
-    public UserResponse updateUser(String userId, UserUpdateRequest request){
+    public UserResponse updateUser(String userId, UserUpdateRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         userMapper.updateUser(user, request);
@@ -69,7 +87,7 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
-    public void deleteUser(String idUser){
+    public void deleteUser(String idUser) {
         userRepository.deleteById(idUser);
     }
 }
