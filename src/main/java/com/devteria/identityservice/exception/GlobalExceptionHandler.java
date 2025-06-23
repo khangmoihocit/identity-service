@@ -2,6 +2,7 @@ package com.devteria.identityservice.exception;
 
 import com.devteria.identityservice.dto.request.ApiResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -18,21 +19,36 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = RuntimeException.class)
     ResponseEntity<ApiResponse> handlingRuntimeExceotion(RuntimeException exception){
         ApiResponse apiResponse = new ApiResponse();
-        apiResponse.setCode(1001);
-        apiResponse.setMessage(exception.getMessage());
+        apiResponse.setCode(ErrorCode.UNCATEGORIZED_EXCEPTION.getCode());
+        apiResponse.setMessage(ErrorCode.UNCATEGORIZED_EXCEPTION.getMessage());
+
         return ResponseEntity.badRequest().body(apiResponse);
     }
 
     @ExceptionHandler(value = AppException.class)
     ResponseEntity<ApiResponse> handlingAppExceotion(AppException exception){
-        ApiResponse apiResponse = new ApiResponse();
         ErrorCode errorCode = exception.getErrorCode();
 
-        //nhan du lieu tu enum ma ta tao truoc thay vi phai nhap nhu tren
-        apiResponse.setCode(errorCode.getCode()); //ta tu dinh nghia code
-        apiResponse.setMessage(errorCode.getMessage()); //ta tu dinh nghia message
+        ApiResponse apiResponse = ApiResponse.builder()
+                .code(errorCode.getCode())
+                .message(errorCode.getMessage())
+                .build();
 
-        return ResponseEntity.badRequest().body(apiResponse);
+        return ResponseEntity
+                .status(errorCode.getStatusCode())
+                .body(apiResponse);
+    }
+
+    @ExceptionHandler(value = AccessDeniedException.class)
+    ResponseEntity<ApiResponse> handlingAccessDeniedException(){
+        ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
+
+        return ResponseEntity.status(errorCode.getStatusCode()).body(
+                ApiResponse.builder()
+                        .code(errorCode.getCode())
+                        .message(errorCode.getMessage())
+                        .build()
+        );
     }
 
     //xu ly khi nhap
