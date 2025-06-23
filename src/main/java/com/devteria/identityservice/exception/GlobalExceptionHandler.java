@@ -39,6 +39,7 @@ public class GlobalExceptionHandler {
                 .body(apiResponse);
     }
 
+    //xử lý không có quyền
     @ExceptionHandler(value = AccessDeniedException.class)
     ResponseEntity<ApiResponse> handlingAccessDeniedException(){
         ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
