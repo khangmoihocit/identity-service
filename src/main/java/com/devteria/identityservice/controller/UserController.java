@@ -20,7 +20,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
-//@RequiredArgsConstructor chỉ tạo constructor với các trường có final thôi bạn nhé,
+//@RequiredArgsConstructor chỉ tạo constructor với các trường có final ,
 // nó khác với @AllArgsConstructor ( sẽ tạo constructor với tất cả các trường)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j //de dùng log.
