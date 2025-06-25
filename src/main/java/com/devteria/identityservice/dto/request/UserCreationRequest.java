@@ -1,5 +1,6 @@
 package com.devteria.identityservice.dto.request;
 
+import com.devteria.identityservice.validator.DodConstraint;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,6 +21,8 @@ public class UserCreationRequest {
     private String password;
     private String firstName;
     private String lastName;
+
+    @DodConstraint(min = 18, message = "INVALID_DOD")
     private LocalDate dob;
 
 
