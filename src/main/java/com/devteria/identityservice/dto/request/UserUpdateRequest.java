@@ -1,5 +1,6 @@
 package com.devteria.identityservice.dto.request;
 
+import com.devteria.identityservice.validator.DodConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,6 +18,8 @@ public class UserUpdateRequest {
     private String password;
     private String firstName;
     private String lastName;
+
+    @DodConstraint(min = 18, message = "INVALID_DOD")
     private LocalDate dob;
     private List<String> roles;
 }

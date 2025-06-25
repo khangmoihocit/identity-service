@@ -58,7 +58,7 @@ public class UserService {
 
     //#PreAuthorize: kiểm tra trước khi vào method, đúng quyền mới chạy code trong method
 //    @PreAuthorize("hasRole('ADMIN')")  //sẽ chỉ map với ROLE_ADMIN
-    @PreAuthorize("hasAuthority('UPDATE_DATA')") //map với các permission
+    @PreAuthorize("hasAuthority('APPROVE_POST')") //map với các permission
     public List<UserResponse> getUsers() {
         log.info("In method get users");
         return userMapper.toUsersResponse(userRepository.findAll());
