@@ -35,5 +35,6 @@ source: tên thuộc tính trong đối tượng đầu vào
 
     List<UserResponse> toUsersResponse(List<User> Users);
 
+    @Mapping(target = "roles", ignore = true)
     void updateUser(@MappingTarget User user, UserUpdateRequest request);
 }

@@ -19,7 +19,7 @@ import java.util.Set;
 ví dụ thế này, có user và userDTO,
 mà user có field password nhưng mình k muốn response password cho client thì trong DTO mình xóa field này đi là dc,
 Client tương tác với server qua các đối tượng dto này, các entity thì để tương tác với jpa, csdl,
-1 ví dụ nữa là trong entity user có fiel : private Role role nhưng ta chỉ muốn trả về cho
+1 ví dụ nữa là trong entity user có fiel : private RoleEnum role nhưng ta chỉ muốn trả về cho
 client là tên của role này thôi thì lúc đó dto sẽ hữu dụng,
  chúng ta có thể thêm các field khác để có thể trả về nhiều thông tin nhất trong 1 request
 

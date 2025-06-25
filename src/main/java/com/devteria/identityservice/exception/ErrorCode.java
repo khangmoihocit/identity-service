@@ -12,7 +12,8 @@ public enum ErrorCode {
     INVALID_PASSWORD(1003, "password must be at least 8 character", HttpStatus.BAD_REQUEST),
     USER_NOT_EXISTED(1004, "user not existed", HttpStatus.NOT_FOUND), //404
     UNAUTHENTICATED(1006, "unauthenticated", HttpStatus.UNAUTHORIZED), // 401 chưa xác thực
-    UNAUTHORIZED(1006, "you do not have permission", HttpStatus.FORBIDDEN) //403 không có quyền
+    UNAUTHORIZED(1006, "you do not have permission", HttpStatus.FORBIDDEN), //403 không có quyền
+    ROLE_ADMIN_NOT_INITIALIZED(1007, "admin role not initialized", HttpStatus.BAD_REQUEST)
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {
