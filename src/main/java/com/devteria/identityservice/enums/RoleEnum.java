@@ -1,6 +1,6 @@
 package com.devteria.identityservice.enums;
 
-public enum Role {
+public enum RoleEnum {
     ADMIN,
     USER
 }
