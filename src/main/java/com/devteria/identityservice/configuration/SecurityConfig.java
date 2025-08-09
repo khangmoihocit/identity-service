@@ -35,18 +35,18 @@ public class SecurityConfig {
 
         //permitAll: public
         httpSecurity.authorizeHttpRequests(request ->
-                request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
-                        //chỉ token có roles là admin mới truy cập được
+                        request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
+                                //chỉ token có roles là admin mới truy cập được
 //                        .requestMatchers(HttpMethod.GET, "/users").hasRole(RoleEnum.ADMIN.name())
 //                        .hasAuthority("SCOPE_ADMIN")
-                        // tuong duong voi cai tren, k co ROLE_
-                        .anyRequest().authenticated() //còn các request khác phải login
+                                // tuong duong voi cai tren, k co ROLE_
+                                .anyRequest().authenticated() //còn các request khác phải login
         );
 
         //config: cần token mới dùng được các request chưa public
         httpSecurity.oauth2ResourceServer(outh2 ->
                 outh2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())
-                        .jwtAuthenticationConverter(jwtAuthenticationConverter()))
+                                .jwtAuthenticationConverter(jwtAuthenticationConverter()))
                         .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
         );
 
@@ -57,7 +57,7 @@ public class SecurityConfig {
 
     //custom tu SCOPE_ sang ROLE_
     @Bean
-    JwtAuthenticationConverter jwtAuthenticationConverter(){
+    JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
         jwtGrantedAuthoritiesConverter.setAuthorityPrefix("");
 

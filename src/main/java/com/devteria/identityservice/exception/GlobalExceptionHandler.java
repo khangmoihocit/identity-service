@@ -4,11 +4,13 @@ import com.devteria.identityservice.dto.request.ApiResponse;
 import jakarta.validation.ConstraintViolation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.time.format.DateTimeParseException;
 import java.util.Map;
 import java.util.Objects;
 
@@ -63,6 +65,18 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler(value= HttpMessageNotReadableException.class)
+    ResponseEntity<ApiResponse> handlingDateTimeParse(HttpMessageNotReadableException exception){
+        ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
+
+        return ResponseEntity.status(errorCode.getStatusCode()).body(
+                ApiResponse.builder()
+                        .code(errorCode.getCode())
+                        .message(exception.getMessage())
+                        .build()
+        );
+    }
+
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     ResponseEntity<ApiResponse> handlingValidation(MethodArgumentNotValidException exception) {
         String enumKey = exception.getFieldError().getDefaultMessage();
@@ -99,5 +113,6 @@ public class GlobalExceptionHandler {
 
         return message.replace("{" + MIN_ATTRIBUTE + "}", minValue);
     }
+
 
 }
