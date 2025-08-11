@@ -22,7 +22,7 @@ public class UserCreationRequest {
     private String firstName;
     private String lastName;
 
-    @DodConstraint(min = 18, message = "INVALID_DOD")
+    @DodConstraint(min = 16, message = "INVALID_DOD")
     private LocalDate dob;
 
 

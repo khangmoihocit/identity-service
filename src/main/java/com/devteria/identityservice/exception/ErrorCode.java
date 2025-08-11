@@ -15,7 +15,7 @@ public enum ErrorCode {
     UNAUTHENTICATED(1006, "unauthenticated", HttpStatus.UNAUTHORIZED), // 401 chưa xác thực
     UNAUTHORIZED(1007, "you do not have permission", HttpStatus.FORBIDDEN), //403 không có quyền
     ROLE_ADMIN_NOT_INITIALIZED(1008, "admin role not initialized", HttpStatus.BAD_REQUEST),
-    INVALID_DOD(1009, "invalid date of birth", HttpStatus.BAD_REQUEST),
+    INVALID_DOD(1009, "Your age must be at least {min}", HttpStatus.BAD_REQUEST),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {
