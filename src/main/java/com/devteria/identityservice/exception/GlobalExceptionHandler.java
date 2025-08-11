@@ -65,8 +65,8 @@ public class GlobalExceptionHandler {
         );
     }
 
-    @ExceptionHandler(value= HttpMessageNotReadableException.class)
-    ResponseEntity<ApiResponse> handlingDateTimeParse(HttpMessageNotReadableException exception){
+    @ExceptionHandler(value = HttpMessageNotReadableException.class)
+    ResponseEntity<ApiResponse> handlingDateTimeParse(HttpMessageNotReadableException exception) {
         ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
 
         return ResponseEntity.status(errorCode.getStatusCode()).body(
@@ -82,6 +82,8 @@ public class GlobalExceptionHandler {
         String enumKey = exception.getFieldError().getDefaultMessage();
 
         ErrorCode errorCode = ErrorCode.INVALID_KEY;
+
+        //Lấy các thuộc tính từ exception
         Map<String, Object> attributes = null;
         try {
             errorCode = ErrorCode.valueOf(enumKey);
