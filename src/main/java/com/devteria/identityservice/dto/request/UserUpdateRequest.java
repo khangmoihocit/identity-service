@@ -19,7 +19,8 @@ public class UserUpdateRequest {
     private String firstName;
     private String lastName;
 
-    @DodConstraint(min = 18, message = "INVALID_DOD")
+    @DodConstraint(min = 16, message = "INVALID_DOD")
     private LocalDate dob;
+
     private List<String> roles;
 }

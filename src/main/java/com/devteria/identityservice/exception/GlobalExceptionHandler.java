@@ -3,6 +3,7 @@ package com.devteria.identityservice.exception;
 import com.devteria.identityservice.dto.request.ApiResponse;
 import jakarta.validation.ConstraintViolation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
@@ -67,7 +68,19 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = HttpMessageNotReadableException.class)
     ResponseEntity<ApiResponse> handlingDateTimeParse(HttpMessageNotReadableException exception) {
-        ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
+        ErrorCode errorCode = ErrorCode.UNCATEGORIZED_EXCEPTION;
+
+        return ResponseEntity.status(errorCode.getStatusCode()).body(
+                ApiResponse.builder()
+                        .code(errorCode.getCode())
+                        .message(exception.getMessage())
+                        .build()
+        );
+    }
+
+    @ExceptionHandler(value= InvalidDataAccessApiUsageException.class)
+    ResponseEntity<ApiResponse> handlingInvalidData(InvalidDataAccessApiUsageException exception) {
+        ErrorCode errorCode = ErrorCode.UNCATEGORIZED_EXCEPTION;
 
         return ResponseEntity.status(errorCode.getStatusCode()).body(
                 ApiResponse.builder()
