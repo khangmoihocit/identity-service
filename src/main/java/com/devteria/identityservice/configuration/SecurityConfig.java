@@ -1,5 +1,6 @@
 package com.devteria.identityservice.configuration;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,6 +30,9 @@ public class SecurityConfig {
     @Value("${jwt.signerKey}")
     private String signerKey;
 
+    @Autowired
+    CustomJwtDecoder customJwtDecoder;
+
     //cấu hình  các quyeenf
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
@@ -45,7 +49,7 @@ public class SecurityConfig {
 
         //config: cần token mới dùng được các request chưa public
         httpSecurity.oauth2ResourceServer(outh2 ->
-                outh2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())
+                outh2.jwt(jwtConfigurer -> jwtConfigurer.decoder(customJwtDecoder)
                                 .jwtAuthenticationConverter(jwtAuthenticationConverter()))
                         .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
         );
@@ -68,14 +72,14 @@ public class SecurityConfig {
     }
 
     //config: cần token mới dùng được các request chưa public
-    @Bean
-    JwtDecoder jwtDecoder() {
-        SecretKeySpec secretKeySpec = new SecretKeySpec(signerKey.getBytes(), "HS512");
-        return NimbusJwtDecoder
-                .withSecretKey(secretKeySpec)
-                .macAlgorithm(MacAlgorithm.HS512)
-                .build();
-    }
+//    @Bean
+//    JwtDecoder jwtDecoder() {
+//        SecretKeySpec secretKeySpec = new SecretKeySpec(signerKey.getBytes(), "HS512");
+//        return NimbusJwtDecoder
+//                .withSecretKey(secretKeySpec)
+//                .macAlgorithm(MacAlgorithm.HS512)
+//                .build();
+//    }
 
     @Bean
     PasswordEncoder passwordEncoder() {
