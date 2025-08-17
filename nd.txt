@@ -1,0 +1,17 @@
+1. Tại sao thẻ phòng (Access Token) chỉ có hạn 1 ngày?
+
+    Bạn quẹt thẻ này liên tục để ra vào phòng, đi thang máy, vào bể bơi... Vì nó được sử dụng thường xuyên ở nhiều nơi, rủi ro bạn làm rơi, để quên, hoặc bị người khác lấy cắp là rất cao.
+
+    Nếu ai đó nhặt được thẻ của bạn, họ chỉ có thể vào phòng bạn trong thời gian thẻ còn hạn (tối đa là 1 ngày). Rủi ro được giới hạn trong một khoảng thời gian rất ngắn.
+
+2. Tại sao không cấp luôn thẻ phòng có hạn 30 ngày?
+
+    Đây chính là câu hỏi của bạn. Nếu bạn làm mất thẻ phòng có hạn 30 ngày vào ngày đầu tiên, kẻ gian sẽ có quyền ra vào phòng bạn trong suốt cả tháng. Thiệt hại là cực kỳ lớn!
+
+3. Vậy Refresh Token dùng để làm gì?
+
+    Khi thẻ phòng (Access Token) của bạn hết hạn sau 1 ngày, bạn không cần phải lôi Hộ chiếu/CCCD ra check-in lại từ đầu.
+
+    Thay vào đó, bạn chỉ cần xuống quầy lễ tân (một nơi an toàn, duy nhất), đưa ra giấy xác nhận (Refresh Token) mà bạn đã cất kỹ. Lễ tân sẽ xác thực và cấp cho bạn một thẻ phòng mới có hạn 1 ngày nữa.
+
+    Bạn chỉ sử dụng giấy xác nhận này rất hiếm khi (mỗi ngày một lần) và tại một nơi an toàn (quầy lễ tân), nên rủi ro bị lộ là cực kỳ thấp.
