@@ -46,6 +46,14 @@ public class AuthenticationService {
     @Value("${jwt.signerKey}")
     protected String SIGNER_KEY;
 
+    @NonFinal
+    @Value("${jwt.valid-duration}")
+    protected long VALID_DURATION;
+
+    @NonFinal
+    @Value("${jwt.refreshable-duration}")
+    protected long REFRESHABLE_DURATION;
+
 
     //xac thuc token tu client gui len
     public IntrospectResponse introspect(IntrospectRequest request) throws JOSEException, ParseException {
@@ -53,7 +61,7 @@ public class AuthenticationService {
 
         boolean isValid = true;
         try {
-            verifyToken(token);
+            verifyToken(token, false);
         } catch (AppException ex) {
             isValid = false;
         }
@@ -87,21 +95,26 @@ public class AuthenticationService {
 
     //khi logout sẽ lưu id token và expiry vào database
     public void logout(LogoutRequest request) throws ParseException, JOSEException {
-        var signToken = verifyToken(request.getToken());
+        try{
+            //logout theo thời hạn của refresh
+            var signToken = verifyToken(request.getToken(), true);
 
-        String jit = signToken.getJWTClaimsSet().getJWTID();
-        Date expiryTime = signToken.getJWTClaimsSet().getExpirationTime();
+            String jit = signToken.getJWTClaimsSet().getJWTID();
+            Date expiryTime = signToken.getJWTClaimsSet().getExpirationTime();
 
-        InvalidatedToken invalidatedToken = InvalidatedToken.builder()
-                .id(jit)
-                .expiryTime(expiryTime)
-                .build();
-        invalidatedTokenRepository.save(invalidatedToken);
+            InvalidatedToken invalidatedToken = InvalidatedToken.builder()
+                    .id(jit)
+                    .expiryTime(expiryTime)
+                    .build();
+            invalidatedTokenRepository.save(invalidatedToken);
+        }catch (AppException ex){
+            System.out.println(ex.getMessage());
+        }
     }
 
     public AuthenticationResponse refreshToken(RefreshRequest request) throws ParseException, JOSEException {
         //xác thực token
-        var signedJwt = verifyToken(request.getToken());
+        var signedJwt = verifyToken(request.getToken(), true);
 
         //lưu token cũ vào bảng invalid
         var jit = signedJwt.getJWTClaimsSet().getJWTID();
@@ -127,17 +140,21 @@ public class AuthenticationService {
                 .build();
     }
 
-    private SignedJWT verifyToken(String token) throws JOSEException, ParseException {
+    //trả về token được parse và xác thực token còn hạn và đúng không
+    private SignedJWT verifyToken(String token, boolean isRefresh) throws JOSEException, ParseException {
         JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
 
         SignedJWT signedJWT = SignedJWT.parse(token);
 
-        Date expityTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+        Date expityTime = (isRefresh) ?
+                new Date(signedJWT.getJWTClaimsSet().getIssueTime()
+                        .toInstant().plus(REFRESHABLE_DURATION, ChronoUnit.SECONDS).toEpochMilli())
+                : signedJWT.getJWTClaimsSet().getExpirationTime();
 
         //xac thuc token tu client
         var verified = signedJWT.verify(verifier); //tra ve true/false
 
-        if (!verified && expityTime.after(new Date())) {
+        if (!(verified && expityTime.after(new Date()))) {
             throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
 
@@ -158,7 +175,7 @@ public class AuthenticationService {
                 .issuer("khangmoihocit.com")  //de xac dinh cai token nay dc issuer tu ai
                 .issueTime(new Date())  //thoi gian bat dau ap dung 
                 .expirationTime(new Date
-                        (Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()))  //thoi han token
+                        (Instant.now().plus(VALID_DURATION, ChronoUnit.SECONDS).toEpochMilli()))  //thoi han token
                 .jwtID(UUID.randomUUID().toString()) //token id
                 .claim("scope", buildScope(user))
                 .build();
