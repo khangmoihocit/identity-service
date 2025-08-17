@@ -3,6 +3,7 @@ package com.devteria.identityservice.service;
 import com.devteria.identityservice.dto.request.AuthenticationRequest;
 import com.devteria.identityservice.dto.request.IntrospectRequest;
 import com.devteria.identityservice.dto.request.LogoutRequest;
+import com.devteria.identityservice.dto.request.RefreshRequest;
 import com.devteria.identityservice.dto.response.AuthenticationResponse;
 import com.devteria.identityservice.dto.response.IntrospectResponse;
 import com.devteria.identityservice.entity.InvalidatedToken;
@@ -98,6 +99,34 @@ public class AuthenticationService {
         invalidatedTokenRepository.save(invalidatedToken);
     }
 
+    public AuthenticationResponse refreshToken(RefreshRequest request) throws ParseException, JOSEException {
+        //xác thực token
+        var signedJwt = verifyToken(request.getToken());
+
+        //lưu token cũ vào bảng invalid
+        var jit = signedJwt.getJWTClaimsSet().getJWTID();
+        var expiryTime = signedJwt.getJWTClaimsSet().getExpirationTime();
+
+        InvalidatedToken invalidatedToken = InvalidatedToken.builder()
+                .id(jit)
+                .expiryTime(expiryTime)
+                .build();
+
+        invalidatedTokenRepository.save(invalidatedToken);
+
+        //lấy thông tin user để tạo token mới
+        var username = signedJwt.getJWTClaimsSet().getSubject();
+        var user = userRepository.findByUsername(username).orElseThrow(
+                () -> new AppException(ErrorCode.UNAUTHENTICATED));
+
+        var token = generateToken(user);
+
+        return AuthenticationResponse.builder()
+                .token(token)
+                .authenticated(true)
+                .build();
+    }
+
     private SignedJWT verifyToken(String token) throws JOSEException, ParseException {
         JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
 
@@ -119,7 +148,6 @@ public class AuthenticationService {
 
         return signedJWT;
     }
-
 
     private String generateToken(User user) {
         //thuat toan hs512
