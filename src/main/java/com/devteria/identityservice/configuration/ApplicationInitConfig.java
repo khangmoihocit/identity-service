@@ -35,6 +35,11 @@ public class ApplicationInitConfig {
                                 .description("user role")
                         .build());
 
+                roleRepository.save(Role.builder()
+                        .name(RoleEnum.ADMIN.name())
+                        .description("admin role")
+                        .build());
+
                 var role = roleRepository.findById(RoleEnum.ADMIN.name())
                         .orElseThrow(()-> new AppException(ErrorCode.ROLE_ADMIN_NOT_INITIALIZED));
 
