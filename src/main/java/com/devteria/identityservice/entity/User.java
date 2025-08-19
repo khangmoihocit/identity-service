@@ -34,6 +34,10 @@ public class User {
     @Id //annotation
     @GeneratedValue(strategy = GenerationType.UUID) // UUID: tạo các id ngẫu nhiên không bị trùng lặp
     private String id;
+
+    //utf8mb4_unicode_ci: ci - không phân biệt chữ hoa thường
+    //unique = true: bài toán concurrent request: yêu cầu đồng thời nhiều người tạo cùng username cùng 1 lúc
+    @Column(name = "username", unique = true, columnDefinition = "VARCHAR(255) COLLATE utf8mb4_unicode_ci")
     private String username;
     private String password;
     private String firstName;
